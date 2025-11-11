@@ -47,7 +47,7 @@ def check_rules(txn_hash: str) -> dict | None:
     if data['status'] == 0:
         return {
             "status": "PHISHING",
-            "reason": "Transaction failed (status=0). This is a common indicator for scam contract interactions."
+            "reason": "Transaction failed. This is a common indicator for scam contract interactions."
         }
 
     # If no rules are matched, return None
