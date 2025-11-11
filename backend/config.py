@@ -1,0 +1,5 @@
+
+INFURA_PROJECT_ID = "229724fba4264ea495c7d07804b5ce26"
+
+
+INFURA_URL = f"https://mainnet.infura.io/v3/{INFURA_PROJECT_ID}"

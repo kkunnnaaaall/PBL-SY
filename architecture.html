@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Architecture - DApp Phishing Shield</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <h3>DApp Phishing Shield</h3>
+        </div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="architecture.html">Architecture</a>
+            <a href="#">Results</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="analysis-card">
+            <h2>System Architecture</h2>
+            <p>
+                Our system is a full-stack web application designed to provide real-time phishing analysis. It's built on a classic client-server model, with a clear separation between the user interface (frontend) and the analysis logic (backend).
+            </p>
+
+            <h3>High-Level System Diagram</h3>
+            
+            <p>
+                The architecture is composed of five key components that work together:
+                <br>1. Frontend Client: The website you interact with.
+                <br>2. Backend API: A server that listens for requests from the frontend.
+                <br>3. Hybrid Engine: The "brain" that contains our two analysis modules.
+                <br>4. Data Layer: A fetcher that communicates with the blockchain.
+                <br>5. External API: The Infura node that provides live blockchain data.
+            </p>
+
+            <hr style="margin: 25px 0; border-color: rgba(255, 255, 255, 0.1);">
+
+            <h3>Core Components</h3>
+
+            <h4>1. Frontend (Client-Side)</h4>
+            <p>
+                This is the static website built with HTML, CSS, and JavaScript. Its only job is to provide a user interface. When you click "Analyze", the `js/main.js` script uses the browser's `fetch` API to send the transaction hash to our backend server.
+            </p>
+
+            <h4>2. Backend API (Server-Side)</h4>
+            <p>
+                This is a Python server built using the Flask micro-framework. The `app.py` script creates a lightweight web server that listens for requests. It exposes a single API endpoint, `/analyze`, which accepts the transaction hash, processes it, and returns a final JSON response (e.g., `{"status": "PHISHING", "reason": "..."}`).
+            </p>
+
+            <h4>3. The Hybrid Analysis Engine</h4>
+            <p>
+                This is the core logic of our project, located in the `analysis_engine/` folder. It operates in two stages:
+            </p>
+            <ul>
+                <li>
+                    <strong>Part 1: Rule-Based Engine (`rules.py`)</strong>
+                    <br>This acts as a fast, first-pass filter. It checks for known "red flags" that are 100% indicators of a scam, such as a transaction going to a known phishing address from our `KNOWN_PHISHING_ADDRESSES` list or a failed transaction (a common scam pattern).
+                </li>
+                <br>
+                <li>
+                    <strong>Part 2: Machine Learning Model (`predictor.py`)</strong>
+                    <br>If a transaction passes the rules, it's sent to the ML model. This model handles the "unknown" threats. It uses a trained Random Forest Classifier (the `.pkl` file) to analyze a set of features (like transaction value, input data length, etc.) and predict the *probability* of the transaction being a scam.
+                </li>
+            </ul><br>
+
+            <h4>4. Data Layer (`blockchain_fetcher.py`)</h4>
+            <p>
+                Neither the rules nor the ML model can work with just a hash. They need *data*. This script uses the Web3.py library to connect to the Ethereum blockchain via an Infura node. It takes the hash and fetches all the critical details: the 'to' address, the 'from' address, the 'value', and more.
+            </p>
+
+            <hr style="margin: 25px 0; border-color: rgba(255, 255, 255, 0.1);">
+
+            <h3>Offline Model Training</h3>
+            <p>
+                The `phishing_classifier.pkl` model is a pre-trained file. It was created "offline" (before the server was even run) using the `model/model_trainer.ipynb` notebook.
+            </p>
+            
+            <ol>
+                <li>We start with a large `.csv` dataset of thousands of transactions, each labeled "Safe" or "Phishing".</li>
+                <li>We perform Feature Engineering to create numerical data from the raw columns (e.g., `input_data_length`).</li>
+                <li>We use a `StandardScaler` to normalize the data.</li>
+                <li>We train the `RandomForestClassifier` on this data.</li>
+                <li>The final, trained model is saved as a `.pkl` file, which our `predictor.py` script can then load and use.</li>
+            </ol>
+        </div>
+    </main>
+
+</body>
+</html>
