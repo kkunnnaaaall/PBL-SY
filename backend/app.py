@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS # Import CORS
+from flask_cors import CORS
 from analysis_engine.rules import check_rules
 from analysis_engine.predictor import predict_ml
 import sys
